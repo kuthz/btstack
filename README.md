@@ -1,4 +1,4 @@
-# Bitorrent docker stack
+# Bittorrent docker stack
 
 Repository that contains docker-compose file with docker images to seed
 
