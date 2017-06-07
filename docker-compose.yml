@@ -1,0 +1,79 @@
+version: '3'
+services:
+  openvpn:
+    build: ./docker/openvpn 
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    ports:
+      - 7878:7878
+      - 8989:8989
+      - 9091:9091
+      - 9117:9117
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro 
+      - /home/media/mount/config/openvpn/:/etc/openvpn/profile/
+    environment:
+      - OPENVPN_CONFIG=es11.nordvpn.com.tcp443
+      - LOCAL_NETWORK=192.168.1.0/24
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+  transmission:
+    image: linuxserver/transmission
+    depends_on:
+      - openvpn
+    network_mode: "service:openvpn"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/media/mount/config/transmission/:/config
+      - /home/media/mount/downloads/:/downloads
+    environment:
+      - PUID=1033
+      - PGID=100
+  jackett:
+    image: linuxserver/jackett
+    depends_on:
+      - openvpn
+    network_mode: "service:openvpn"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/media/mount/config/jackett:/config
+      - /home/media/mount/downloads/:/downloads
+    environment:
+      - PUID=1033
+      - PGID=100
+  sonarr:
+    image: linuxserver/sonarr
+    depends_on:
+      - openvpn
+      - transmission
+      - jackett
+    network_mode: "service:openvpn"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/media/mount/config/sonarr/:/config
+      - /home/media/mount/video/Series/:/tv/
+      - /home/media/mount/downloads/:/downloads
+    environment:
+      - PUID=1033
+      - PGID=100
+  radarr:
+    image: linuxserver/radarr
+    depends_on:
+      - openvpn
+      - transmission
+      - jackett
+    network_mode: "service:openvpn"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/media/mount/config/radarr/:/config
+      - /home/media/mount/downloads/:/downloads
+      - /home/media/mount/video/Movies/:/movies/
+    environment:
+      - PUID=1033
+      - PGID=100
