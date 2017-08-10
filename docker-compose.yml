@@ -16,7 +16,7 @@ services:
       - /etc/localtime:/etc/localtime:ro 
       - /home/media/mount/config/openvpn/:/etc/openvpn/profile/
     environment:
-      - OPENVPN_CONFIG=es11.nordvpn.com.tcp443
+      - OPENVPN_CONFIG=es10.nordvpn.com.tcp443
       - LOCAL_NETWORK=192.168.1.0/24
       - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
   transmission:
@@ -30,8 +30,8 @@ services:
       - /home/media/mount/config/transmission/:/config
       - /home/media/mount/downloads/:/downloads
     environment:
-      - PUID=1033
-      - PGID=100
+       - PUID=1000
+       - PGID=1000
   jackett:
     image: linuxserver/jackett
     depends_on:
@@ -43,14 +43,12 @@ services:
       - /home/media/mount/config/jackett:/config
       - /home/media/mount/downloads/:/downloads
     environment:
-      - PUID=1033
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
   sonarr:
     image: linuxserver/sonarr
     depends_on:
       - openvpn
-      - transmission
-      - jackett
     network_mode: "service:openvpn"
     restart: always
     volumes:
@@ -59,14 +57,12 @@ services:
       - /home/media/mount/video/Series/:/tv/
       - /home/media/mount/downloads/:/downloads
     environment:
-      - PUID=1033
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
   radarr:
     image: linuxserver/radarr
     depends_on:
       - openvpn
-      - transmission
-      - jackett
     network_mode: "service:openvpn"
     restart: always
     volumes:
@@ -75,5 +71,5 @@ services:
       - /home/media/mount/downloads/:/downloads
       - /home/media/mount/video/Movies/:/movies/
     environment:
-      - PUID=1033
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
