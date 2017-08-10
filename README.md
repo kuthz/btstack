@@ -4,7 +4,7 @@ Repository that contains docker-compose file with docker images to seed
 
 
 ## Instruction and Usage
-All traffic go through the openvpn container. IF the container is not running no network access is available for other containers
+All traffic go through the openvpn container. If the container is not running no network access is available for other containers
 
 The stack use docker-compose, so usage show docker-compose way
 
@@ -54,3 +54,32 @@ See https://github.com/linuxserver/docker-sonarr/
 ### Radarr
 
 See https://github.com/linuxserver/docker-radarr/
+
+
+## Mounting Samba/cifs V3 remote volume on the host to use with container
+
+This procedure is tested with a Synology DSM 6.X.
+Verified that SMB V3 is activated in the configuration
+```
+Control Panel, File Services, Advanced settings
+Set Maximum SMB protocol to SMB3
+```
+
+Create a samba .smbcredential file in root home directory
+```
+username=<username>
+password=<password>
+```
+
+Secure the file with `chmod 700 .smbcredentials`
+
+
+Modify the `/etc/fstab`
+
+```
+//<remote mount>  <local mount>  cifs  credentials=<smbcredentials>,iocharset=utf8,vers=3.0,file_mode=0777,dir_mode=0777  0  0
+```
+
+* `<remote mount>` - Remote samba share to mount for example 192.168.1.1/video
+* `<local mount>` - Local folder to mount /home/media/mount/video
+* `<smbcredentials>` - Location of the .smbcredentials file
