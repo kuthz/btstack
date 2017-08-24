@@ -48,15 +48,19 @@ iptables -A INPUT  -i tun0 -s 0.0.0.0/0 -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT  -i lo -j ACCEPT
 
-if [ -n "${LOCAL_NETWORK-}" ]; then
-  eval $(/sbin/ip r l m 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
-  if [ -n "${GW-}" -a -n "${INT-}" ]; then
-    echo "adding route to local network $LOCAL_NETWORK via $GW dev $INT"
-    /sbin/ip r a "$LOCAL_NETWORK" via "$GW" dev "$INT"
-    # Allow private networks on eth0
-    iptables -A OUTPUT -o eth0 -d $LOCAL_NETWORK -j ACCEPT
-    iptables -A INPUT  -i eth0 -s $LOCAL_NETWORK -j ACCEPT
-  fi
+eval $(/sbin/ip r l m 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
+if [ -n "${GW-}" -a -n "${INT-}" ]; then
+    # Allow communication from the docker gateway, needed for docker MAC
+    iptables -A OUTPUT -o "$INT" -d "$GW" -j ACCEPT
+    iptables -A INPUT  -i "$INT" -s "$GW" -j ACCEPT
+
+    if [ -n "${LOCAL_NETWORK-}" ]; then
+        echo "adding route to local network $LOCAL_NETWORK via $GW dev $INT"
+        /sbin/ip r a "$LOCAL_NETWORK" via "$GW" dev "$INT"
+        # Allow private networks on eth0
+        iptables -A OUTPUT -o "$INT" -d $LOCAL_NETWORK -j ACCEPT
+        iptables -A INPUT  -i "$INT" -s $LOCAL_NETWORK -j ACCEPT
+    fi
 fi
 
-openvpn $OPENVPN_OPTS --script-security 3 --up /etc/openvpn/openvpn_up.sh --config "$OPENVPN_CONFIG" $OPENVPN_AUTH
+openvpn $OPENVPN_OPTS --script-security 2 --up /etc/openvpn/openvpn_up.sh --config "$OPENVPN_CONFIG" $OPENVPN_AUTH

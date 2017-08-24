@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
     openvpn \
     iptables \
     supervisor \
+    openresolv \
     && rm -rf /var/lib/apt/lists/*
 
 COPY openvpn.sh /usr/local/bin/openvpn.sh
