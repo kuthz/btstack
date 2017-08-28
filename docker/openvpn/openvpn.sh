@@ -33,8 +33,9 @@ eval $(awk '/proto/ { split($0,a," "); print "OPENVPN_SERVER_PROTO="a[2]"" }' $O
 
 echo "Configure to allow $OPENVPN_SERVER_IP:$OPENVPN_SERVER_PORT:$OPENVPN_SERVER_PROTO only"
 
-#Allow DNS by default to support openvpn configured with DNS, it will be block when openvpn connection up
-iptables -A OUTPUT -p udp -o eth0 --dport 53 -j ACCEPT
+# Allow ALL on LOOPBACK
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A INPUT  -i lo -j ACCEPT
 
 # Allow VPN connection on ETH0
 iptables -A OUTPUT -o eth0 -d $OPENVPN_SERVER_IP -p $OPENVPN_SERVER_PROTO --dport $OPENVPN_SERVER_PORT -j ACCEPT
@@ -43,10 +44,6 @@ iptables -A INPUT  -i eth0 -s $OPENVPN_SERVER_IP -p $OPENVPN_SERVER_PROTO --spor
 # Allow ALL on TUN0
 iptables -A OUTPUT -o tun0 -d 0.0.0.0/0 -j ACCEPT
 iptables -A INPUT  -i tun0 -s 0.0.0.0/0 -j ACCEPT
-
-# Allow ALL on LOOPBACK
-iptables -A OUTPUT -o lo -j ACCEPT
-iptables -A INPUT  -i lo -j ACCEPT
 
 eval $(/sbin/ip r l m 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
 if [ -n "${GW-}" -a -n "${INT-}" ]; then
