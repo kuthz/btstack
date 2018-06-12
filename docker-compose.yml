@@ -16,7 +16,7 @@ services:
       - /etc/localtime:/etc/localtime:ro 
       - /home/media/mount/config/openvpn/:/etc/openvpn/profile/
     environment:
-      - OPENVPN_CONFIG=es10.nordvpn.com.tcp443
+      - OPENVPN_CONFIG=es34.nordvpn.com.tcp443
       - LOCAL_NETWORK=192.168.1.0/24
       - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
   transmission:
@@ -24,7 +24,6 @@ services:
     depends_on:
       - openvpn
     network_mode: "service:openvpn"
-    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/media/mount/config/transmission/:/config
@@ -37,7 +36,6 @@ services:
     depends_on:
       - openvpn
     network_mode: "service:openvpn"
-    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/media/mount/config/jackett:/config
@@ -48,9 +46,9 @@ services:
   sonarr:
     image: linuxserver/sonarr
     depends_on:
-      - openvpn
+      - transmission
+      - jackett
     network_mode: "service:openvpn"
-    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/media/mount/config/sonarr/:/config
@@ -62,9 +60,9 @@ services:
   radarr:
     image: linuxserver/radarr
     depends_on:
-      - openvpn
+      - transmission
+      - jackett
     network_mode: "service:openvpn"
-    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/media/mount/config/radarr/:/config

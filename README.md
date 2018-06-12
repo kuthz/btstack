@@ -77,7 +77,7 @@ Secure the file with `chmod 700 .smbcredentials`
 Modify the `/etc/fstab`
 
 ```
-//<remote mount>  <local mount>  cifs  credentials=<smbcredentials>,iocharset=utf8,vers=3.0,file_mode=0777,dir_mode=0777  0  0
+//<remote mount>  <local mount>  cifs  credentials=<smbcredentials>,cache=none,iocharset=utf8,vers=3.0,file_mode=0777,dir_mode=0777  0  0
 ```
 
 * `<remote mount>` - Remote samba share to mount for example 192.168.1.1/video

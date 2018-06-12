@@ -1,10 +1,19 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 RUN apt-get update && apt-get install -y \
     openvpn \
     iptables \
     supervisor \
+    dnsmasq \
     openresolv \
+    #Uncomment this line to include more debugging tools
+    #net-tools \
+    #vim \
+    #inetutils-ping \
+    #inetutils-traceroute \
+    #dnsutils \
+    #netcat \
+    #tcpdump \
     && rm -rf /var/lib/apt/lists/*
 
 COPY openvpn.sh /usr/local/bin/openvpn.sh
