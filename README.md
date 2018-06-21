@@ -8,20 +8,18 @@ All traffic go through the openvpn container. If the container is not running no
 
 The stack use docker-compose, so usage show docker-compose way
 
-### OpenVPN
+### Usage
 
-#### Usage
+Copy the `env.template` to `.env` and modify the variables to fit your setup
 
-```
-  volumes:
-    - <path to .opvn folder>:/etc/openvpn/profile/
-  environment:
-    - OPENVPN_CONFIG=<ovpn file to use>
-    - LOCAL_NETWORK=<local network ip address range>
-    - OPENVPN_OPTS=<openvpn extra options>
-```
+To validate the docker-compose that will be executed
 
-If the .ovpn don't include the credentials in it, you can add a file `.credentials` in the `<path to .opvn folder>`
+`docker-compose config`
+
+### Openvpn
+
+If the .ovpn don't include the credentials in it, you can add a file `.credentials` in the `OPENVPN_PROFILE_PATH` folder
+
 The file must contains these information
 ```
 <username>
@@ -29,15 +27,6 @@ The file must contains these information
 ```
 
 When the docker will start the file will be use for authentication
-
-#### Parameters
-
-
-* `<path to .opvn folder>` - folder on the host where the .opvn file are located
-* `<ovpn file to use>` - .opvn file to use, no need to specified the .opvn extension
-* `<local network ip address range>` - specify this env variable to give access to local network, format 192.168.1.1/24
-* `<openvpn extra options>` - specify any extra openvpn options you want to add
-
 
 ### Transmission
 

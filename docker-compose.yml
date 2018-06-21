@@ -14,11 +14,11 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro 
-      - /home/media/mount/config/openvpn/:/etc/openvpn/profile/
+      - ${OPENVPN_PROFILE_PATH}:/etc/openvpn/profile/
     environment:
-      - OPENVPN_CONFIG=es34.nordvpn.com.tcp443
-      - LOCAL_NETWORK=192.168.1.0/24
-      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - OPENVPN_CONFIG=${OPENVPN_CONFIG_FILE}
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - OPENVPN_OPTS=${OPENVPN_OPTS}
   transmission:
     image: linuxserver/transmission
     depends_on:
@@ -26,11 +26,11 @@ services:
     network_mode: "service:openvpn"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/media/mount/config/transmission/:/config
-      - /home/media/mount/downloads/:/downloads
+      - ${TRANSMISSION_CONFIG_PATH}:/config
+      - ${TRANSMISSION_DOWNLOAD_PATH}:/downloads
     environment:
-       - PUID=1000
-       - PGID=1000
+       - PUID=${USER_ID}
+       - PGID=${GROUP_ID}
   jackett:
     image: linuxserver/jackett
     depends_on:
@@ -38,11 +38,11 @@ services:
     network_mode: "service:openvpn"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/media/mount/config/jackett:/config
-      - /home/media/mount/downloads/:/downloads
+      - ${JACKETT_CONFIG_PATH}:/config
+      - ${JACKETT_DOWNLOAD_PATH}:/downloads
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${USER_ID}
+      - PGID=${GROUP_ID}
   sonarr:
     image: linuxserver/sonarr
     depends_on:
@@ -51,12 +51,12 @@ services:
     network_mode: "service:openvpn"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/media/mount/config/sonarr/:/config
-      - /home/media/mount/video/Series/:/tv/
-      - /home/media/mount/downloads/:/downloads
+      - ${SONARR_CONFIG_PATH}:/config
+      - ${SONARR_VIDEO_PATH}:/tv/
+      - ${SONARR_DOWNLOAD_PATH}:/downloads
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${USER_ID}
+      - PGID=${GROUP_ID}
   radarr:
     image: linuxserver/radarr
     depends_on:
@@ -65,9 +65,9 @@ services:
     network_mode: "service:openvpn"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/media/mount/config/radarr/:/config
-      - /home/media/mount/downloads/:/downloads
-      - /home/media/mount/video/Movies/:/movies/
+      - ${RADARR_CONFIG_PATH}:/config
+      - ${RADARR_VIDEO_PATH}:/movies/
+      - ${RADARR_DOWNLOAD_PATH}:/downloads
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${USER_ID}
+      - PGID=${GROUP_ID}
