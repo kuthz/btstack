@@ -24,50 +24,65 @@ services:
     depends_on:
       - openvpn
     network_mode: "service:openvpn"
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./docker/checkvpn.sh:/checkvpn.sh
       - ${TRANSMISSION_CONFIG_PATH}:/config
       - ${TRANSMISSION_DOWNLOAD_PATH}:/downloads
     environment:
        - PUID=${USER_ID}
        - PGID=${GROUP_ID}
+       - TRANSMISSION_WEB_HOME=/combustion-release
+    entrypoint: ["./checkvpn.sh"]
   jackett:
     image: linuxserver/jackett
     depends_on:
       - openvpn
     network_mode: "service:openvpn"
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./docker/checkvpn.sh:/checkvpn.sh
       - ${JACKETT_CONFIG_PATH}:/config
       - ${JACKETT_DOWNLOAD_PATH}:/downloads
     environment:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
+    entrypoint: ["./checkvpn.sh"]
   sonarr:
     image: linuxserver/sonarr
     depends_on:
       - transmission
       - jackett
     network_mode: "service:openvpn"
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./docker/wait-for-it.sh:/wait-for-it.sh
       - ${SONARR_CONFIG_PATH}:/config
       - ${SONARR_VIDEO_PATH}:/tv/
       - ${SONARR_DOWNLOAD_PATH}:/downloads
     environment:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
+    # Wait for transmission to be started
+    entrypoint: ["./wait-for-it.sh", "-t", "0", "127.0.0.1:9091", "--", "/init"]
   radarr:
     image: linuxserver/radarr
     depends_on:
       - transmission
       - jackett
     network_mode: "service:openvpn"
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./docker/wait-for-it.sh:/wait-for-it.sh
       - ${RADARR_CONFIG_PATH}:/config
       - ${RADARR_VIDEO_PATH}:/movies/
       - ${RADARR_DOWNLOAD_PATH}:/downloads
     environment:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
+    # Wait for transmission to be started
+    entrypoint: ["./wait-for-it.sh", "-t", "0", "127.0.0.1:9091", "--", "/init"]
