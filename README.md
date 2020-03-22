@@ -18,15 +18,7 @@ To validate the docker-compose that will be executed
 
 ### Openvpn
 
-If the .ovpn don't include the credentials in it, you can add a file `.credentials` in the `OPENVPN_PROFILE_PATH` folder
-
-The file must contains these information
-```
-<username>
-<password>
-```
-
-When the docker will start the file will be use for authentication
+See https://github.com/kuthz/docker-openvpn-killswitch
 
 ### Transmission
 

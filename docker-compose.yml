@@ -1,7 +1,7 @@
 version: '3'
 services:
   openvpn:
-    build: ./docker/openvpn 
+    image: kuthz/openvpn-killswitch
     cap_add:
       - NET_ADMIN
     devices:
